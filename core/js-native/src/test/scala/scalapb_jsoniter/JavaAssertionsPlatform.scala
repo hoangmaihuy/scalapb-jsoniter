@@ -1,0 +1,3 @@
+package scalapb_jsoniter
+
+trait JavaAssertionsPlatform
