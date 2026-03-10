@@ -1,5 +1,6 @@
 import scalapb.compiler.Version._
 import sbtcrossproject.CrossPlugin.autoImport.crossProject
+import xerial.sbt.Sonatype.sonatypeCentralHost
 
 val jsoniterVersion = settingKey[String]("")
 val scalapbJsonCommonVersion = settingKey[String]("")
@@ -68,9 +69,7 @@ lazy val tests = project
 commonSettings
 
 val noPublish = Seq(
-  publishLocal := {},
-  publish := {},
-  Compile / publishArtifact := false
+  publish / skip := true,
 )
 
 noPublish
@@ -83,6 +82,18 @@ lazy val commonSettings = Def.settings(
   description := "Json/Protobuf convertors for ScalaPB using jsoniter-scala",
   licenses += ("MIT", url("https://opensource.org/licenses/MIT")),
   organization := "io.github.scalapb-json",
+  sonatypeCredentialHost := sonatypeCentralHost,
+  homepage := Some(url("https://github.com/hoangmaihuy/scalapb-jsoniter")),
+  scmInfo := Some(
+    ScmInfo(
+      url("https://github.com/hoangmaihuy/scalapb-jsoniter"),
+      "scm:git:github.com/hoangmaihuy/scalapb-jsoniter.git",
+      Some("scm:git:git@github.com:hoangmaihuy/scalapb-jsoniter.git")
+    )
+  ),
+  developers := List(
+    Developer("hoangmaihuy", "Hoang Mai", "", url("https://github.com/hoangmaihuy"))
+  ),
   Project.inConfig(Test)(sbtprotoc.ProtocPlugin.protobufConfigSettings),
   Compile / PB.targets := Nil,
   (Test / PB.protoSources) := Seq(baseDirectory.value.getParentFile / "shared/src/test/protobuf"),
