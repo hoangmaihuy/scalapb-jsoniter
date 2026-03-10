@@ -83,6 +83,7 @@ lazy val commonSettings = Def.settings(
   licenses += ("MIT", url("https://opensource.org/licenses/MIT")),
   organization := "io.github.hoangmaihuy",
   sonatypeCredentialHost := sonatypeCentralHost,
+  publishTo := sonatypePublishToBundle.value,
   versionScheme := Some("early-semver"),
   homepage := Some(url("https://github.com/hoangmaihuy/scalapb-jsoniter")),
   scmInfo := Some(
