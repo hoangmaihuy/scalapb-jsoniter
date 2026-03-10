@@ -5,6 +5,8 @@ import xerial.sbt.Sonatype.sonatypeCentralHost
 val jsoniterVersion = settingKey[String]("")
 val scalapbJsonCommonVersion = settingKey[String]("")
 
+ThisBuild / sonatypeCredentialHost := sonatypeCentralHost
+
 val scalapbJsoniter = crossProject(JVMPlatform, JSPlatform, NativePlatform)
   .in(file("core"))
   .enablePlugins(BuildInfoPlugin)
@@ -82,8 +84,6 @@ lazy val commonSettings = Def.settings(
   description := "Json/Protobuf convertors for ScalaPB using jsoniter-scala",
   licenses += ("MIT", url("https://opensource.org/licenses/MIT")),
   organization := "io.github.hoangmaihuy",
-  sonatypeCredentialHost := sonatypeCentralHost,
-  publishTo := sonatypePublishToBundle.value,
   versionScheme := Some("early-semver"),
   homepage := Some(url("https://github.com/hoangmaihuy/scalapb-jsoniter")),
   scmInfo := Some(
