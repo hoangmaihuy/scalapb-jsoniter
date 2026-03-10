@@ -1,4 +1,5 @@
 # scalapb-jsoniter
+[![scaladoc](https://javadoc.io/badge2/io.github.hoangmaihuy/scalapb-jsoniter_3/javadoc.svg)](https://javadoc.io/doc/io.github.hoangmaihuy/scalapb-jsoniter_3)
 
 JSON/Protobuf converters for [ScalaPB](https://scalapb.github.io/) using [jsoniter-scala](https://github.com/plokhotnyuk/jsoniter-scala).
 
@@ -8,14 +9,22 @@ The structure of this project is hugely inspired by [scalapb-circe](https://gith
 
 Include in your `build.sbt` file
 
+### core
+
 ```scala
-libraryDependencies += "io.github.scalapb-json" %% "scalapb-jsoniter" % "0.1.0-SNAPSHOT"
+libraryDependencies += "io.github.hoangmaihuy" %% "scalapb-jsoniter" % "0.1.0"
 ```
 
 For Scala.js or Scala Native
 
 ```scala
-libraryDependencies += "io.github.scalapb-json" %%% "scalapb-jsoniter" % "0.1.0-SNAPSHOT"
+libraryDependencies += "io.github.hoangmaihuy" %%% "scalapb-jsoniter" % "0.1.0"
+```
+
+### macros
+
+```scala
+libraryDependencies += "io.github.hoangmaihuy" %% "scalapb-jsoniter-macros" % "0.1.0"
 ```
 
 ## Usage
@@ -99,6 +108,44 @@ import scalapb_jsoniter.Printer
 implicit val p: Printer = new Printer(includingDefaultValueFields = true)
 
 writeToString(Guitar(0)) // returns {"numberOfStrings":0}
+```
+
+### Macros
+
+The `scalapb-jsoniter-macros` module provides compile-time validation and convenience methods.
+
+#### String Interpolation
+
+Parse `Struct` and `Value` literals at compile time:
+
+```scala
+import scalapb_jsoniter.ProtoMacrosJsoniter.*
+
+val s = struct"""{"key": "value"}"""  // google.protobuf.Struct, validated at compile time
+val v = value"""42"""                 // google.protobuf.Value, validated at compile time
+```
+
+#### Compile-time JSON Validation
+
+Validate JSON against a protobuf message schema at compile time:
+
+```scala
+import scalapb_jsoniter.ProtoMacrosJsoniter.*
+
+val msg = MyMessage.fromJsonConstant("""{"field": "value"}""") // compile error if JSON is invalid
+```
+
+#### Convenience Methods on Companions
+
+Parse JSON strings via message companions with various return types:
+
+```scala
+import scalapb_jsoniter.ProtoMacrosJsoniter.*
+
+MyMessage.fromJson(jsonStr)        // returns MyMessage (throws on error)
+MyMessage.fromJsonOpt(jsonStr)     // returns Option[MyMessage]
+MyMessage.fromJsonEither(jsonStr)  // returns Either[Throwable, MyMessage]
+MyMessage.fromJsonTry(jsonStr)     // returns Try[MyMessage]
 ```
 
 ### google.protobuf.Any

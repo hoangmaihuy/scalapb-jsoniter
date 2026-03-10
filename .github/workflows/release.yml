@@ -20,6 +20,7 @@ jobs:
       - uses: coursier/cache-action@v8
 
       - name: Publish to Maven Central
+        if: env.PGP_SECRET != ''
         run: sbt ci-release
         env:
           PGP_PASSPHRASE: ${{ secrets.PGP_PASSPHRASE }}
