@@ -24,7 +24,7 @@ object StructFormat {
     in.rollbackToken()
     val kind: struct.Value.Kind = b match {
       case 'n' =>
-        in.readNullOrError((), "expected null")
+        in.skip()
         Kind.NullValue(struct.NullValue.NULL_VALUE)
       case '"' =>
         Kind.StringValue(in.readString(null))

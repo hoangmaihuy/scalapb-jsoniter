@@ -10,6 +10,19 @@ class StructFormatSpec extends AnyFlatSpec with Matchers with JavaAssertions {
     JsonFormat.toJsonString(Value()) must be("null")
   }
 
+  "Struct with null in array" should "parse correctly" in {
+    val json = """{ "a" : [1, false, null, "x"] }"""
+    val result = JsonFormat.fromJsonString[Struct](json)
+    result must be(Struct(Map(
+      "a" -> Value(Value.Kind.ListValue(ListValue(List(
+        Value(Value.Kind.NumberValue(1.0)),
+        Value(Value.Kind.BoolValue(false)),
+        Value(Value.Kind.NullValue(NullValue.NULL_VALUE)),
+        Value(Value.Kind.StringValue("x"))
+      ))))
+    )))
+  }
+
   "NullValue" should "be serialized and parsed from JSON correctly" in {
     JsonFormat.fromJsonString[StructTest]("""{"nv": null}""") must be(StructTest())
     JsonFormat.fromJsonString[StructTest]("""{"nv": "NULL_VALUE"}""") must be(StructTest())

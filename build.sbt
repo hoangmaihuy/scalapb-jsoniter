@@ -37,6 +37,34 @@ val scalapbJsoniter = crossProject(JVMPlatform, JSPlatform, NativePlatform)
     )
   )
 
+lazy val macros = project
+  .in(file("macros"))
+  .settings(
+    commonSettings,
+    name := "scalapb-jsoniter-macros",
+    Test / PB.protoSources := Nil,
+    Test / PB.targets := Nil,
+    libraryDependencies ++= Seq(
+      "io.github.scalapb-json" %% "scalapb-json-macros" % scalapbJsonCommonVersion.value,
+    ),
+  )
+  .dependsOn(
+    scalapbJsoniterJVM
+  )
+
+lazy val tests = project
+  .in(file("tests"))
+  .settings(
+    commonSettings,
+    noPublish,
+    Test / PB.protoSources := Nil,
+    Test / PB.targets := Nil,
+    libraryDependencies ++= Seq(
+      "org.scalatest" %% "scalatest-funspec" % "3.2.19" % "test",
+    ),
+  )
+  .dependsOn(macros, scalapbJsoniterJVM % "test->test")
+
 commonSettings
 
 val noPublish = Seq(
