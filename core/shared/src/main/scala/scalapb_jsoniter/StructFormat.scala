@@ -11,7 +11,10 @@ object StructFormat {
     v.kind match {
       case Kind.Empty            => out.writeNull()
       case Kind.NullValue(_)     => out.writeNull()
-      case Kind.NumberValue(value) => out.writeVal(value)
+      case Kind.NumberValue(value) =>
+        val l = value.toLong
+        if (l.toDouble == value) out.writeVal(l)
+        else out.writeVal(value)
       case Kind.StringValue(value) => out.writeVal(value)
       case Kind.BoolValue(value)   => out.writeVal(value)
       case Kind.StructValue(value) => structWriter(value, out)
