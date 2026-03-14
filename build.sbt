@@ -64,6 +64,8 @@ lazy val tests = project
     Test / PB.targets := Nil,
     libraryDependencies ++= Seq(
       "org.scalatest" %% "scalatest-funspec" % "3.2.19" % "test",
+      "io.github.scalapb-json" %% "scalapb-circe" % "0.16.0" % "test",
+      "io.circe" %% "circe-parser" % "0.14.15" % "test",
     ),
   )
   .dependsOn(macros, scalapbJsoniterJVM % "test->test")
