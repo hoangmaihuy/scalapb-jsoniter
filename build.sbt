@@ -77,7 +77,7 @@ Global / excludeLintKeys += jsoniterVersion
 
 lazy val commonSettings = Def.settings(
   scalaVersion := "3.3.7",
-  scalacOptions ++= Seq("-feature", "-deprecation", "-old-syntax", "-no-indent"),
+  scalacOptions ++= Seq("-feature", "-deprecation", "-old-syntax", "-no-indent", "-Werror"),
   description := "Json/Protobuf convertors for ScalaPB using jsoniter-scala",
   licenses += ("MIT", url("https://opensource.org/licenses/MIT")),
   organization := "io.github.hoangmaihuy",

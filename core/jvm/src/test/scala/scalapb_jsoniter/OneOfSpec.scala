@@ -31,7 +31,7 @@ class OneOfSpec extends AnyFlatSpec with Matchers with TableDrivenPropertyChecks
     new Printer(includingDefaultValueFields = true).print(message) must be(json)
     assertJsonEquals(
       new Printer(includingDefaultValueFields = true).print(message),
-      ProtobufJavaPrinter().includingDefaultValueFields().print(toJavaProto(message))
+      ProtobufJavaPrinter().alwaysPrintFieldsWithNoPresence().print(toJavaProto(message))
     )
   }
 
