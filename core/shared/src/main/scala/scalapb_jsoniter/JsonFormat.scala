@@ -9,8 +9,7 @@ import com.google.protobuf.struct.NullValue
 import com.google.protobuf.timestamp.Timestamp
 import scalapb.*
 import scalapb.descriptors.*
-import scalapb_json.*
-import scalapb_json.ScalapbJsonCommon.GenericCompanion
+import scalapb_jsoniter.ScalapbJsonCommon.GenericCompanion
 
 import scala.util.control.NonFatal
 
@@ -76,29 +75,48 @@ class Printer(
     serializeSingleValue(fieldDesc, m.getField(fieldDesc), out)
   }
 
-  private def writeMessage[A <: GeneratedMessage](m: A, out: JsonWriter): Unit = {
+  private def writeMessage[A <: GeneratedMessage](m: A, out: JsonWriter): Unit =
+    writeFields(m.companion, m.getField(_), out)
+
+  // Serializes a nested message reflectively from its PMessage. Well-known types are
+  // reconstructed (a cheap, bounded leaf) and dispatched through `toJson` for their
+  // special formatting; regular messages are walked directly from the PMessage so we
+  // never re-convert the same subtree more than once.
+  private def toJsonMessage(cmp: GeneratedMessageCompanion[?], pm: PMessage, out: JsonWriter): Unit = {
+    if (JsonFormat.wellKnownTypeFullNames.contains(cmp.scalaDescriptor.fullName)) {
+      toJson(cmp.messageReads.read(pm), out)
+    } else {
+      writeFields(cmp, pm.value.getOrElse(_, PEmpty), out)
+    }
+  }
+
+  private def writeFields(
+    cmp: GeneratedMessageCompanion[?],
+    fieldValue: FieldDescriptor => PValue,
+    out: JsonWriter
+  ): Unit = {
     out.writeObjectStart()
-    val descriptor = m.companion.scalaDescriptor
-    descriptor.fields.foreach { f =>
+    cmp.scalaDescriptor.fields.foreach { f =>
       val name = if (preservingProtoFieldNames) f.name else ScalapbJsonCommon.jsonName(f)
       if (f.protoType.isTypeMessage) {
-        serializeMessageField(f, name, m.getFieldByNumber(f.number), out)
+        serializeMessageField(cmp, f, name, fieldValue(f), out)
       } else {
-        serializeNonMessageField(f, name, m.getField(f), out)
+        serializeNonMessageField(f, name, fieldValue(f), out)
       }
     }
     out.writeObjectEnd()
   }
 
   private[scalapb_jsoniter] def serializeMessageField(
+    containerCmp: GeneratedMessageCompanion[?],
     fd: FieldDescriptor,
     name: String,
-    value: Any,
+    value: PValue,
     out: JsonWriter
   ): Unit = {
     value match {
-      case null =>
-      case Nil =>
+      case PEmpty =>
+      case PRepeated(xs) if xs.isEmpty =>
         if (includingDefaultValueFields) {
           out.writeKey(name)
           if (fd.isMapField && !formattingMapEntriesAsKeyValuePairs) {
@@ -107,15 +125,17 @@ class Printer(
             out.writeArrayStart(); out.writeArrayEnd()
           }
         }
-      case xs: Iterable[GeneratedMessage] @unchecked =>
+      case PRepeated(xs) =>
         if (fd.isMapField && !formattingMapEntriesAsKeyValuePairs) {
+          val mapEntryCmp = containerCmp.messageCompanionForFieldNumber(fd.number)
           val mapEntryDescriptor = fd.scalaType.asInstanceOf[ScalaType.Message].descriptor
           val keyDescriptor = mapEntryDescriptor.findFieldByNumber(1).get
           val valueDescriptor = mapEntryDescriptor.findFieldByNumber(2).get
           out.writeKey(name)
           out.writeObjectStart()
-          xs.foreach { x =>
-            val key = x.getField(keyDescriptor) match {
+          xs.foreach { entryValue =>
+            val entry = entryValue.asInstanceOf[PMessage]
+            val key = entry.value(keyDescriptor) match {
               case PBoolean(v) => v.toString
               case PDouble(v)  => v.toString
               case PFloat(v)   => v.toString
@@ -125,22 +145,28 @@ class Printer(
               case v => throw new JsonFormatException(s"Unexpected value for key: $v")
             }
             out.writeKey(key)
+            val entryValuePValue = entry.value.getOrElse(valueDescriptor, PEmpty)
             if (valueDescriptor.protoType.isTypeMessage) {
-              toJson(x.getFieldByNumber(valueDescriptor.number).asInstanceOf[GeneratedMessage], out)
+              toJsonMessage(
+                mapEntryCmp.messageCompanionForFieldNumber(valueDescriptor.number),
+                entryValuePValue.asInstanceOf[PMessage],
+                out
+              )
             } else {
-              serializeSingleValue(valueDescriptor, x.getField(valueDescriptor), out)
+              serializeSingleValue(valueDescriptor, entryValuePValue, out)
             }
           }
           out.writeObjectEnd()
         } else {
+          val elementCmp = containerCmp.messageCompanionForFieldNumber(fd.number)
           out.writeKey(name)
           out.writeArrayStart()
-          xs.foreach(toJson(_, out))
+          xs.foreach(x => toJsonMessage(elementCmp, x.asInstanceOf[PMessage], out))
           out.writeArrayEnd()
         }
-      case msg: GeneratedMessage =>
+      case pm: PMessage =>
         out.writeKey(name)
-        toJson(msg, out)
+        toJsonMessage(containerCmp.messageCompanionForFieldNumber(fd.number), pm, out)
       case v =>
         throw new JsonFormatException(v.toString)
     }
@@ -565,6 +591,28 @@ class Parser(
 object JsonFormat {
   val printer = new Printer()
   val parser = new Parser()
+
+  // Proto full names of well-known types that need bespoke JSON formatting. A nested
+  // message matching one of these is reconstructed and dispatched through Printer.toJson;
+  // everything else is serialized straight from its reflective PMessage.
+  private[scalapb_jsoniter] val wellKnownTypeFullNames: Set[String] = Set(
+    "google.protobuf.Duration",
+    "google.protobuf.Timestamp",
+    "google.protobuf.FieldMask",
+    "google.protobuf.Value",
+    "google.protobuf.Struct",
+    "google.protobuf.ListValue",
+    "google.protobuf.Any",
+    "google.protobuf.DoubleValue",
+    "google.protobuf.FloatValue",
+    "google.protobuf.Int32Value",
+    "google.protobuf.Int64Value",
+    "google.protobuf.UInt32Value",
+    "google.protobuf.UInt64Value",
+    "google.protobuf.BoolValue",
+    "google.protobuf.BytesValue",
+    "google.protobuf.StringValue"
+  )
 
   def toJsonString[A <: GeneratedMessage](m: A): String = printer.print(m)
 

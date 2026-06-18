@@ -3,7 +3,7 @@ package scalapb_jsoniter
 import com.github.plokhotnyuk.jsoniter_scala.core.*
 import com.google.protobuf.struct.{Struct, Value, ListValue, NullValue}
 import scalapb.{GeneratedMessage, GeneratedMessageCompanion}
-import scalapb_json.ProtoMacrosCommon.{protoStructToExpr, protoValueToExpr}
+import scalapb_jsoniter.ProtoMacrosCommon.{protoStructToExpr, protoValueToExpr}
 import scala.quoted.*
 import scala.reflect.NameTransformer.MODULE_INSTANCE_NAME
 import scala.util.{Failure, Success, Try}
@@ -22,6 +22,7 @@ object ProtoMacrosJsoniter {
     def decodeValue(in: JsonReader, default: Value): Value = StructFormat.structValueReader(in)
     def encodeValue(x: Value, out: JsonWriter): Unit = StructFormat.structValueWriter(x, out)
   }
+
 
   extension (inline s: StringContext) {
     inline def struct(): Struct =
@@ -94,7 +95,9 @@ object ProtoMacrosJsoniter {
   )(using quote: Quotes): Expr[A] = {
     import quote.reflect.report
     val str = json.valueOrAbort
-    val clazz = Class.forName(Type.show[A] + "$")
+    // Type.show renders the fully-qualified name with a `_root_.` prefix, which is
+    // not a valid JVM class name; strip it before resolving the companion object.
+    val clazz = Class.forName(Type.show[A].stripPrefix("_root_.") + "$")
     val c: GeneratedMessageCompanion[A] =
       clazz.getField(MODULE_INSTANCE_NAME).get(null).asInstanceOf[GeneratedMessageCompanion[A]]
 

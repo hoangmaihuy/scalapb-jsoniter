@@ -2,7 +2,6 @@ package scalapb_jsoniter
 
 import com.github.plokhotnyuk.jsoniter_scala.core.*
 import com.google.protobuf.any.{Any => PBAny}
-import scalapb_json.*
 
 object AnyFormat {
 
@@ -20,11 +19,12 @@ object AnyFormat {
     out.writeVal(any.typeUrl)
     val descriptor = message.companion.scalaDescriptor
     descriptor.fields.foreach { f =>
-      val name = scalapb_json.ScalapbJsonCommon.jsonName(f)
+      val name = ScalapbJsonCommon.jsonName(f)
+      val value = message.getField(f)
       if (f.protoType.isTypeMessage) {
-        printer.serializeMessageField(f, name, message.getFieldByNumber(f.number), out)
+        printer.serializeMessageField(message.companion, f, name, value, out)
       } else {
-        printer.serializeNonMessageField(f, name, message.getField(f), out)
+        printer.serializeNonMessageField(f, name, value, out)
       }
     }
     out.writeObjectEnd()

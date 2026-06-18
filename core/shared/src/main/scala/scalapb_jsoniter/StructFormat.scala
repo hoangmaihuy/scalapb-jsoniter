@@ -3,7 +3,6 @@ package scalapb_jsoniter
 import com.github.plokhotnyuk.jsoniter_scala.core.*
 import com.google.protobuf.struct
 import com.google.protobuf.struct.Value.Kind
-import scalapb_json.*
 
 object StructFormat {
 

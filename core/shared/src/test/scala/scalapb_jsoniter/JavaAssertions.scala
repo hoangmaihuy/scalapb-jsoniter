@@ -1,10 +1,9 @@
 package scalapb_jsoniter
 
 import com.github.plokhotnyuk.jsoniter_scala.core.*
-import scalapb_json.ScalapbJsonCommon.GenericCompanion
+import scalapb_jsoniter.ScalapbJsonCommon.GenericCompanion
 import scalapb.GeneratedMessageCompanion
 import org.scalatest.matchers.must.Matchers
-import scalapb_json.*
 
 trait JavaAssertions extends JavaAssertionsPlatform {
   self: Matchers =>

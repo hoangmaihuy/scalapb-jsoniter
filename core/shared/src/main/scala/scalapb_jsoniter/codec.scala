@@ -2,7 +2,6 @@ package scalapb_jsoniter
 
 import com.github.plokhotnyuk.jsoniter_scala.core.*
 import scalapb.{GeneratedEnum, GeneratedEnumCompanion, GeneratedMessage, GeneratedMessageCompanion}
-import scalapb_json.JsonFormatException
 
 object codec {
 

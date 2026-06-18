@@ -7,7 +7,6 @@ import jsontest.test3.*
 import com.google.protobuf.any.{Any => PBAny}
 import com.google.protobuf.field_mask.FieldMask
 import jsontest.custom_collection.{Guitar, Studio}
-import scalapb_json.*
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.must.Matchers
 
