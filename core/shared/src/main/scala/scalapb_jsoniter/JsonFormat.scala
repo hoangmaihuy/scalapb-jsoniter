@@ -9,8 +9,7 @@ import com.google.protobuf.struct.NullValue
 import com.google.protobuf.timestamp.Timestamp
 import scalapb.*
 import scalapb.descriptors.*
-import scalapb_json.*
-import scalapb_json.ScalapbJsonCommon.GenericCompanion
+import scalapb_jsoniter.ScalapbJsonCommon.GenericCompanion
 
 import scala.util.control.NonFatal
 

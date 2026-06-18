@@ -3,7 +3,6 @@ import sbtcrossproject.CrossPlugin.autoImport.crossProject
 import xerial.sbt.Sonatype.sonatypeCentralHost
 
 val jsoniterVersion = settingKey[String]("")
-val scalapbJsonCommonVersion = settingKey[String]("")
 
 ThisBuild / sonatypeCredentialHost := sonatypeCentralHost
 
@@ -19,7 +18,6 @@ val scalapbJsoniter = crossProject(JVMPlatform, JSPlatform, NativePlatform)
     buildInfoKeys := Seq[BuildInfoKey](
       "scalapbVersion" -> scalapbVersion,
       jsoniterVersion,
-      scalapbJsonCommonVersion,
       scalaVersion,
       version
     )
@@ -30,8 +28,8 @@ val scalapbJsoniter = crossProject(JVMPlatform, JSPlatform, NativePlatform)
       scalapb.gen(javaConversions = true, scala3Sources = true) -> (Test / sourceManaged).value
     ),
     libraryDependencies ++= Seq(
-      "com.google.protobuf" % "protobuf-java-util" % "3.25.8" % "test",
-      "com.google.protobuf" % "protobuf-java" % "3.25.8" % "protobuf"
+      "com.google.protobuf" % "protobuf-java-util" % "4.35.0" % "test",
+      "com.google.protobuf" % "protobuf-java" % "4.35.0" % "protobuf"
     )
   )
   .platformsSettings(JSPlatform, NativePlatform)(
@@ -47,9 +45,6 @@ lazy val macros = project
     name := "scalapb-jsoniter-macros",
     Test / PB.protoSources := Nil,
     Test / PB.targets := Nil,
-    libraryDependencies ++= Seq(
-      "io.github.scalapb-json" %% "scalapb-json-macros" % scalapbJsonCommonVersion.value,
-    ),
   )
   .dependsOn(
     scalapbJsoniterJVM
@@ -101,11 +96,10 @@ lazy val commonSettings = Def.settings(
   Project.inConfig(Test)(sbtprotoc.ProtocPlugin.protobufConfigSettings),
   Compile / PB.targets := Nil,
   (Test / PB.protoSources) := Seq(baseDirectory.value.getParentFile / "shared/src/test/protobuf"),
-  scalapbJsonCommonVersion := "0.10.0",
   jsoniterVersion := "2.32.0",
   libraryDependencies ++= Seq(
-    "io.github.scalapb-json" %%% "scalapb-json-common" % scalapbJsonCommonVersion.value,
-    "com.thesamet.scalapb" %%% "scalapb-runtime" % scalapbVersion % "protobuf,test",
+    "com.thesamet.scalapb" %%% "scalapb-runtime" % scalapbVersion,
+    "com.thesamet.scalapb" %%% "scalapb-runtime" % scalapbVersion % "protobuf",
     "org.scalatest" %%% "scalatest-flatspec" % "3.2.19" % "test",
     "org.scalatest" %%% "scalatest-freespec" % "3.2.19" % "test",
     "org.scalatest" %%% "scalatest-mustmatchers" % "3.2.19" % "test",

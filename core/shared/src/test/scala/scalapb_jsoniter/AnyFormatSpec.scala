@@ -3,7 +3,6 @@ package scalapb_jsoniter
 import com.google.protobuf.any.{Any => PBAny}
 import jsontest.anytests.{AnyTest, ManyAnyTest}
 import scalapb.GeneratedMessageCompanion
-import scalapb_json.*
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.must.Matchers
 
