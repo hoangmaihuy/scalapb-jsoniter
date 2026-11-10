@@ -115,11 +115,16 @@ class Printer(
           out.writeKey(name)
           out.writeObjectStart()
           xs.foreach { x =>
+            val keyType = keyDescriptor.protoType
             val key = x.getField(keyDescriptor) match {
               case PBoolean(v) => v.toString
               case PDouble(v)  => v.toString
               case PFloat(v)   => v.toString
-              case PInt(v)     => v.toString
+              case PInt(v) if keyType.isTypeUint32 || keyType.isTypeFixed32 =>
+                ScalapbJsonCommon.unsignedInt(v).toString
+              case PInt(v) => v.toString
+              case PLong(v) if keyType.isTypeUint64 || keyType.isTypeFixed64 =>
+                unsignedLong(v).toString
               case PLong(v)    => v.toString
               case PString(v)  => v
               case v => throw new JsonFormatException(s"Unexpected value for key: $v")
@@ -193,7 +198,8 @@ class Printer(
   }
 
   private[scalapb_jsoniter] def serializeEnum(e: EnumValueDescriptor, out: JsonWriter): Unit = {
-    if (formattingEnumsAsNumber) out.writeVal(e.number)
+    // A value this descriptor does not know (written by newer code) prints as its number, as protobuf-java prints it.
+    if (formattingEnumsAsNumber || e.isUnrecognized) out.writeVal(e.number)
     else out.writeVal(e.name)
   }
 
