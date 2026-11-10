@@ -31,4 +31,4 @@ jobs:
       - uses: coursier/cache-action@v8
 
       - name: Test
-        run: sbt "+ scalapbJsoniterJVM/test" "+ tests/test"
+        run: sbt "+ scalapbJsoniterJVM/testFull; + tests/testFull"
