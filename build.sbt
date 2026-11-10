@@ -24,8 +24,8 @@ val scalapbJsoniter = crossProject(JVMPlatform, JSPlatform, NativePlatform)
       scalapb.gen(javaConversions = true, scala3Sources = true) -> (Test / sourceManaged).value
     ),
     libraryDependencies ++= Seq(
-      "com.google.protobuf" % "protobuf-java-util" % "4.35.0" % "test",
-      "com.google.protobuf" % "protobuf-java" % "4.35.0" % "protobuf"
+      "com.google.protobuf" % "protobuf-java-util" % "4.36.2" % "test",
+      "com.google.protobuf" % "protobuf-java" % "4.36.2" % "protobuf"
     )
   )
   .platformsSettings(JSPlatform, NativePlatform)(
@@ -34,7 +34,7 @@ val scalapbJsoniter = crossProject(JVMPlatform, JSPlatform, NativePlatform)
     )
   )
   .nativeSettings(
-    // scalatest-core 3.2.19 for Native is built against test-interface 0.5.1, which declares a strict scheme
+    // scalatest-core 3.2.20 for Native is built against test-interface 0.5.10, which declares a strict scheme
     libraryDependencySchemes += "org.scala-native" % "test-interface_native0.5_3" % VersionScheme.Always
   )
 
@@ -56,11 +56,11 @@ lazy val tests = project
     Test / PB.protoSources := Nil,
     Test / PB.targets := Nil,
     libraryDependencies ++= Seq(
-      "org.scalatest" %% "scalatest-funspec" % "3.2.19" % "test",
-      "io.github.scalapb-json" %% "scalapb-circe" % "0.16.0" % "test",
-      "io.circe" %% "circe-parser" % "0.14.15" % "test",
+      "org.scalatest" %% "scalatest-funspec" % "3.2.20" % "test",
+      "io.github.scalapb-json" %% "scalapb-circe" % "0.17.0" % "test",
+      "io.circe" %% "circe-parser" % "0.14.17" % "test",
     ),
-    // scalapb-circe 0.16.0 is built on scalapb-runtime 0.11.x; the comparison tests run it against 1.0.0-alpha
+    // scalapb-circe 0.17.0 is built on scalapb-runtime 0.11.x; the comparison tests run it against 1.0.0-alpha
     libraryDependencySchemes += "com.thesamet.scalapb" %% "scalapb-runtime" % VersionScheme.Always,
   )
   .dependsOn(macros, scalapbJsoniterJVM % "test->test")
@@ -74,7 +74,7 @@ val noPublish = Seq(
 Global / excludeLintKeys += jsoniterVersion
 
 lazy val commonSettings = Def.settings(
-  scalaVersion := "3.3.7",
+  scalaVersion := "3.9.0",
   scalacOptions ++= Seq("-feature", "-deprecation", "-old-syntax", "-no-indent", "-Werror"),
   description := "Json/Protobuf convertors for ScalaPB using jsoniter-scala",
   licenses += ("MIT", uri("https://opensource.org/licenses/MIT")),
@@ -93,14 +93,14 @@ lazy val commonSettings = Def.settings(
   ),
   Compile / PB.targets := Nil,
   (Test / PB.protoSources) := Seq(baseDirectory.value.getParentFile / "shared/src/test/protobuf"),
-  jsoniterVersion := "2.32.0",
+  jsoniterVersion := "2.43.0",
   libraryDependencies ++= Seq(
     "com.thesamet.scalapb" %% "scalapb-runtime" % scalapbVersion,
     "com.thesamet.scalapb" %% "scalapb-runtime" % scalapbVersion % "protobuf",
-    "org.scalatest" %% "scalatest-flatspec" % "3.2.19" % "test",
-    "org.scalatest" %% "scalatest-freespec" % "3.2.19" % "test",
-    "org.scalatest" %% "scalatest-mustmatchers" % "3.2.19" % "test",
-    "org.scalatest" %% "scalatest-shouldmatchers" % "3.2.19" % "test",
+    "org.scalatest" %% "scalatest-flatspec" % "3.2.20" % "test",
+    "org.scalatest" %% "scalatest-freespec" % "3.2.20" % "test",
+    "org.scalatest" %% "scalatest-mustmatchers" % "3.2.20" % "test",
+    "org.scalatest" %% "scalatest-shouldmatchers" % "3.2.20" % "test",
     "com.github.plokhotnyuk.jsoniter-scala" %% "jsoniter-scala-macros" % jsoniterVersion.value % "test",
   ),
   compileOrder := CompileOrder.JavaThenScala,

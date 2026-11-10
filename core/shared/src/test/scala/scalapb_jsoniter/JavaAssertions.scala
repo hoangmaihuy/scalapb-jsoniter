@@ -94,7 +94,7 @@ trait JavaAssertions extends JavaAssertionsPlatform {
         }
       }
     }
-    readFromString[Any](s)(codec)
+    readFromString[Any](s)(using codec)
   }
 
   protected def assertJsonEquals(actual: String, expected: String): Unit = {

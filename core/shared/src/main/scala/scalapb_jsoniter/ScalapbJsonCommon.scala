@@ -14,13 +14,13 @@ object ScalapbJsonCommon {
 
   type GenericCompanion = GeneratedMessageCompanion[? <: GeneratedMessage]
 
-  private[this] val PIntDefault = PInt(0)
-  private[this] val PLongDefault = PLong(0L)
-  private[this] val PFloatDefault = PFloat(0)
-  private[this] val PDoubleDefault = PDouble(0)
-  private[this] val PBooleanDefault = PBoolean(false)
-  private[this] val PStringDefault = PString("")
-  private[this] val PByteStringDefault = PByteString(ByteString.EMPTY)
+  private val PIntDefault = PInt(0)
+  private val PLongDefault = PLong(0L)
+  private val PFloatDefault = PFloat(0)
+  private val PDoubleDefault = PDouble(0)
+  private val PBooleanDefault = PBoolean(false)
+  private val PStringDefault = PString("")
+  private val PByteStringDefault = PByteString(ByteString.EMPTY)
 
   def defaultValue(fd: FieldDescriptor): PValue = {
     require(fd.isOptional)

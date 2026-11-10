@@ -23,15 +23,15 @@ object NameUtils {
     b.toString
   }
 
-  private[this] def isLower(c: Char): Boolean = {
+  private def isLower(c: Char): Boolean = {
     'a' <= c && c <= 'z'
   }
 
-  private[this] def isUpper(c: Char): Boolean = {
+  private def isUpper(c: Char): Boolean = {
     'A' <= c && c <= 'Z'
   }
 
-  private[this] def toUpper(c: Char): Char = {
+  private def toUpper(c: Char): Char = {
     if (isLower(c)) {
       (c - 32).asInstanceOf[Char]
     } else {
@@ -39,7 +39,7 @@ object NameUtils {
     }
   }
 
-  private[this] def toLower(c: Char): Char = {
+  private def toLower(c: Char): Char = {
     if (isUpper(c)) {
       (c + 32).asInstanceOf[Char]
     } else {
@@ -47,7 +47,7 @@ object NameUtils {
     }
   }
 
-  private[this] def toLowerCase(s: String, b: Appendable): Unit = {
+  private def toLowerCase(s: String, b: Appendable): Unit = {
     @annotation.tailrec
     def loop(i: Int): Unit = {
       if (i < s.length) {

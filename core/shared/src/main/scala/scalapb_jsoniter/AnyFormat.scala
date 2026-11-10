@@ -13,7 +13,7 @@ object AnyFormat {
           s"Unknown type ${any.typeUrl}; you may have to register it via TypeRegistry"
         )
       )
-    val message = any.unpack(cmp)
+    val message = any.unpack(using cmp)
     out.writeObjectStart()
     out.writeKey("@type")
     out.writeVal(any.typeUrl)
@@ -49,9 +49,9 @@ object AnyFormat {
       def encodeValue(x: scalapb.GeneratedMessage, out: JsonWriter): Unit =
         throw new UnsupportedOperationException
       def decodeValue(in: JsonReader, default: scalapb.GeneratedMessage): scalapb.GeneratedMessage =
-        parser.fromJson(in)(cmp)
+        parser.fromJson(in)(using cmp)
     }
-    val message = readFromArrayReentrant(raw)(msgCodec)
+    val message = readFromArrayReentrant(raw)(using msgCodec)
     PBAny(typeUrl = typeUrl, value = message.toByteString)
   }
 
@@ -79,7 +79,7 @@ object AnyFormat {
         }
       }
     }
-    readFromArrayReentrant(raw)(extractor)
+    readFromArrayReentrant(raw)(using extractor)
     if (typeUrl == null) {
       throw new JsonFormatException("Expected string @type field in Any")
     }

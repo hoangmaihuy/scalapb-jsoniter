@@ -28,7 +28,7 @@ class Printer(
       def encodeValue(x: A, out: JsonWriter): Unit = toJson(x, out)
       def decodeValue(in: JsonReader, default: A): A = throw new UnsupportedOperationException
     }
-    writeToString(m)(codec)
+    writeToString(m)(using codec)
   }
 
   def toJson[A <: GeneratedMessage](m: A, out: JsonWriter): Unit = {
@@ -278,7 +278,7 @@ class Parser(
       def encodeValue(x: A, out: JsonWriter): Unit = throw new UnsupportedOperationException
       def decodeValue(in: JsonReader, default: A): A = self.fromJson[A](in)
     }
-    readFromString(str)(codec)
+    readFromString(str)(using codec)
   }
 
   def fromJson[A <: GeneratedMessage](in: JsonReader)(implicit cmp: GeneratedMessageCompanion[A]): A = {

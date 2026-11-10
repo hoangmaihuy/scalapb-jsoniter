@@ -70,7 +70,7 @@ object ProtoMacrosJsoniter {
     given ToExpr[Struct] = protoStructToExpr
     val Seq(str) = s.valueOrAbort.parts
     try {
-      val result = readFromString[Struct](str)(structCodec)
+      val result = readFromString[Struct](str)(using structCodec)
       Expr(result)
     } catch {
       case e: Exception => report.errorAndAbort(e.getMessage)
@@ -82,7 +82,7 @@ object ProtoMacrosJsoniter {
     given ToExpr[Value] = protoValueToExpr
     val Seq(str) = s.valueOrAbort.parts
     try {
-      val result = readFromString[Value](str)(valueCodec)
+      val result = readFromString[Value](str)(using valueCodec)
       Expr(result)
     } catch {
       case e: Exception => report.errorAndAbort(e.getMessage)
