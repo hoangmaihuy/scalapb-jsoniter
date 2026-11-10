@@ -1,1 +1,1 @@
-ThisBuild / dynverSonatypeSnapshots := false
+ThisBuild / dynverSonatypeSnapshots := true
