@@ -15,7 +15,7 @@ object Timestamps {
   val NANOS_PER_MILLISECOND = 1000000
   val NANOS_PER_MICROSECOND = 1000
 
-  private[this] val timestampFormat = java.time.format.DateTimeFormatter.ISO_LOCAL_DATE_TIME
+  private val timestampFormat = java.time.format.DateTimeFormatter.ISO_LOCAL_DATE_TIME
 
   def isValid(ts: Timestamp): Boolean =
     (ts.seconds >= TIMESTAMP_SECONDS_MIN &&

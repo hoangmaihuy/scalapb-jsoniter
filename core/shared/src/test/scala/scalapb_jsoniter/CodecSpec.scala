@@ -148,8 +148,8 @@ class CodecSpec extends AnyFreeSpec with Matchers {
       import CodecSpec._
       val band = Band(MyEnum.V1, Seq(Guitar(4), Guitar(5)))
       val expectedJson = """{"version":"V1","guitars":[{"numberOfStrings":4},{"numberOfStrings":5}]}"""
-      writeToString(band)(bandCodec) mustBe expectedJson
-      readFromString[Band](expectedJson)(bandCodec) mustBe band
+      writeToString(band)(using bandCodec) mustBe expectedJson
+      readFromString[Band](expectedJson)(using bandCodec) mustBe band
     }
   }
 }
