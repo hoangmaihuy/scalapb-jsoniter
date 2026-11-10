@@ -272,6 +272,28 @@ class JsonFormatSpec extends AnyFlatSpec with Matchers with OptionValues with Ja
     )
   }
 
+  "TestProto" should "print an unknown enum value as its number, as protobuf-java does" in {
+    val unknown = MyTest3.MyEnum3.Unrecognized(7)
+    new Printer().print(
+      MyTest3(repEnum = Seq(MyTest3.MyEnum3.V1, unknown), optEnum = unknown, intToEnum = Map(1 -> unknown))
+    ) must be("""{"repEnum":["V1",7],"optEnum":7,"intToEnum":{"1":7}}""")
+    new Printer().print(MyTest3().withTreat(MyTest3(optEnum = unknown))) must be("""{"treat":{"optEnum":7}}""")
+  }
+
+  "TestProto" should "print unsigned map keys unsigned, as protobuf-java does" in {
+    new Printer().print(
+      UnsignedMapKeys(
+        uint32ToInt32 = Map(-1 -> 1),
+        fixed32ToInt32 = Map(Int.MinValue -> 2),
+        uint64ToInt32 = Map(-1L -> 3),
+        fixed64ToInt32 = Map(Long.MinValue -> 4)
+      )
+    ) must be(
+      """{"uint32ToInt32":{"4294967295":1},"fixed32ToInt32":{"2147483648":2},""" +
+        """"uint64ToInt32":{"18446744073709551615":3},"fixed64ToInt32":{"9223372036854775808":4}}"""
+    )
+  }
+
   "TestProto" should "format int64 as JSON string" in {
     new Printer().print(MyTest(bazinga = Some(642))) must be("""{"bazinga":"642"}""")
   }

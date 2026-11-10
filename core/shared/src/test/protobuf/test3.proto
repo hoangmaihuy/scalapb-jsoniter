@@ -34,6 +34,13 @@ message MyTest3 {
   map<int32, MyEnum3> int_to_enum = 11;
 }
 
+message UnsignedMapKeys {
+  map<uint32, int32> uint32_to_int32 = 1;
+  map<fixed32, int32> fixed32_to_int32 = 2;
+  map<uint64, int32> uint64_to_int32 = 3;
+  map<fixed64, int32> fixed64_to_int32 = 4;
+}
+
 message Wrapper {
   google.protobuf.DoubleValue  w_double = 1;
   google.protobuf.FloatValue   w_float  = 2;
